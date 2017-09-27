@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.eh.medipha.Models.Drug;
+import com.example.eh.medipha.Models.Measurement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,19 +21,21 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Database Name
     private static final String DATABASE_NAME = "DrugsManager";
 
     // Drugs table name
     private static final String TABLE_DrugS = "Drugs";
+    private static final String TABLE_BLOOD_MEASUREMENTS = "blood";
 
     // Drugs Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_TIME = "time";
     private static final String KEY_STATE = "state";
+    private static final String KEY_VALUE = "value";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,6 +48,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"+ KEY_TIME +" TEXT, "
                 + KEY_STATE + " TEXT" + ")";
         db.execSQL(CREATE_DrugS_TABLE);
+        String CREATE_Measurements_TABLE = "CREATE TABLE " + TABLE_BLOOD_MEASUREMENTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TIME +" TEXT, " + KEY_VALUE + " TEXT " +")";
+        db.execSQL(CREATE_Measurements_TABLE);
     }
 
     // Upgrading database
@@ -52,7 +58,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DrugS);
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BLOOD_MEASUREMENTS);
         // Create tables again
         onCreate(db);
     }
@@ -74,6 +80,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
+    // Adding new Drug
+    public void addBloodMeasure(Measurement measurement) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, measurement.getName()); // Drug Name
+        values.put(KEY_TIME, measurement.getTime()); // Drug Phone
+        values.put(KEY_VALUE,measurement.getValue());
+
+        // Inserting Row
+        db.insert(TABLE_BLOOD_MEASUREMENTS, null, values);
+        db.close(); // Closing database connection
+    }
     // Getting single Drug
     public  Drug getDrug(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -115,22 +134,47 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return Drug list
         return DrugList;
     }
+    public List<Measurement> getAllBloodMeasurements() {
+        List<Measurement> DrugList = new ArrayList<Measurement>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_BLOOD_MEASUREMENTS ;
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Measurement measurement = new Measurement();
+                measurement.setID(Integer.parseInt(cursor.getString(0)));
+                measurement.setTime(cursor.getString(1));
+                measurement.setValue(cursor.getString(2));
+                // Adding Drug to list
+                DrugList.add(measurement);
+            } while (cursor.moveToNext());
+        }
+
+        // return Drug list
+        return DrugList;
+    }
     // Updating single Drug
     public int updateDrug(Drug drug) {
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(KEY_NAME, drug.getName());
-        values.put(KEY_TIME, drug.getTime());
-        values.put(KEY_STATE, drug.getState());
-        Log.d("ID",String.valueOf(drug.getState()));
-        Log.d(KEY_NAME, drug.getName());
-        Log.d(KEY_TIME, drug.getTime());
-        Log.d(KEY_STATE, String.valueOf(drug.getState()));
-        // updating row
-        return db.update(TABLE_DrugS, values, KEY_ID + " = ?",
-                new String[] { Integer.toString(drug.get_id()) });
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(KEY_NAME, drug.getName());
+            values.put(KEY_TIME, drug.getTime());
+            values.put(KEY_STATE, String.valueOf(drug.getState()));
+            Log.d("ID", String.valueOf(drug.get_id()));
+            Log.d(KEY_NAME, drug.getName());
+            Log.d(KEY_TIME, drug.getTime());
+            Log.d(KEY_STATE, String.valueOf(drug.getState()));
+            // updating row
+            return db.update(TABLE_DrugS, values, KEY_ID + " = ?",
+                    new String[]{Integer.toString(drug.get_id())});
+
+
     }
 
     // Deleting single drug

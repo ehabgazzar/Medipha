@@ -19,7 +19,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddMedActivity"></activity>
+        <activity android:name=".AddMedActivity" />
+        <activity
+            android:name=".MedicationsActivity"
+            android:label="@string/title_activity_medications"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.eh.medipha.HomeActivity" />
+        </activity>
+
     </application>
 
 </manifest>

@@ -73,13 +73,29 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        Fragment fragment =null;
+
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            fragment = new HomeFragement();
+            if(fragment!=null) {
+
+                //Apply fragment
+                FragmentTransaction fragmentTransaction =
+                        getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, fragment);
+                fragmentTransaction.commit();
+            }
         } else if (id == R.id.nav_gallery) {
+            Intent intent= new Intent(this,MedicationsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
+
+//            Intent intent= new Intent(this,MeasurementsActivity.class);
+//            startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
 

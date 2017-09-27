@@ -35,6 +35,15 @@ public class HomeFragement extends Fragment {
     public HomeFragement() {
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        recycler_morning.setLayoutManager(new LinearLayoutManager(mContext));
+        DatabaseHandler db = new DatabaseHandler(this.getActivity());
+        List<Drug> drugs =db.getAllDrugs();
+        mDrugAdapter = new DrugAdapter(mContext,drugs);
+        recycler_morning.setAdapter(mDrugAdapter);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,  Bundle savedInstanceState) {
@@ -43,14 +52,14 @@ public class HomeFragement extends Fragment {
         mContext=this.getActivity();
 
         recycler_morning = (RecyclerView) view.findViewById(R.id.recy_moring);
-        recycler_morning.setLayoutManager(new LinearLayoutManager(mContext));
-        List<Drug> drugs =db.getAllDrugs();
-        for (Drug cn : drugs) {
-            String log = "Id: "+cn.get_id()+" ,Name: " + cn.getName() + " ,Time: " + cn.getTime()+", Stat: "+ String.valueOf(cn.getState());
-            // Writing Contacts to log
-            Log.d("Name: ", log);
-        }
-       /* Drug a = new Drug();
+//        recycler_morning.setLayoutManager(new LinearLayoutManager(mContext));
+//        List<Drug> drugs =db.getAllDrugs();
+//        for (Drug cn : drugs) {
+//            String log = "Id: "+cn.get_id()+" ,Name: " + cn.getName() + " ,Time: " + cn.getTime()+", Stat: "+ String.valueOf(cn.getState());
+//            // Writing Contacts to log
+//            Log.d("Name: ", log);
+//        }
+   /* Drug a = new Drug();
         a.setName("ABCA AN");
         a.setState(false);
         a.setTime("11:24 AM");
@@ -66,8 +75,8 @@ public class HomeFragement extends Fragment {
         drugs.add(b);
         drugs.add(c);
 */
-        mDrugAdapter = new DrugAdapter(mContext,drugs);
-        recycler_morning.setAdapter(mDrugAdapter);
+//        mDrugAdapter = new DrugAdapter(mContext,drugs);
+//        recycler_morning.setAdapter(mDrugAdapter);
 
        /* recycler_afternon = (RecyclerView) view.findViewById(R.id.recy_afternon);
         recycler_afternon.setLayoutManager(new LinearLayoutManager(mContext));
