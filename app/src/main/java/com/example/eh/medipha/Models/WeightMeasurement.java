@@ -4,27 +4,29 @@ package com.example.eh.medipha.Models;
  * Created by Eh on 9/28/2017.
  */
 
-public class Measurement {
-
+public class WeightMeasurement {
     int ID;
-    String Name;
     String Value;
+
+    String Notes;
     String Time;
 
-    public Measurement(int ID, String name, String time, String value) {
+    public WeightMeasurement(int ID,String time, String value, String notes) {
         this.ID = ID;
-        Name = name;
+
         Time = time;
-        Value=value;
+        Value =value;
+            Notes=notes;
     }
 
-    public Measurement(String name, String time,String value) {
-        Name = name;
+    public WeightMeasurement( String time, String value, String notes) {
+
         Time = time;
-        Value=value;
+        Value =value;
+        Notes=notes;
     }
 
-    public Measurement() {
+    public WeightMeasurement() {
     }
 
 
@@ -36,13 +38,6 @@ public class Measurement {
         this.ID = ID;
     }
 
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
 
     public String getTime() {
         return Time;
@@ -52,6 +47,7 @@ public class Measurement {
         Time = time;
     }
 
+
     public String getValue() {
         return Value;
     }
@@ -59,4 +55,14 @@ public class Measurement {
     public void setValue(String value) {
         Value = value;
     }
+
+
+    public String getNotes() {
+        return Notes;
+    }
+
+    public void setNotes(String notes) {
+        Notes = notes;
+    }
 }
+

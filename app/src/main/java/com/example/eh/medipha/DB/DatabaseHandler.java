@@ -3,13 +3,13 @@ package com.example.eh.medipha.DB;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.eh.medipha.Models.Drug;
-import com.example.eh.medipha.Models.Measurement;
+import com.example.eh.medipha.Models.BloodMeasurement;
+import com.example.eh.medipha.Models.WeightMeasurement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     // Database Name
     private static final String DATABASE_NAME = "DrugsManager";
@@ -30,12 +30,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_DrugS = "Drugs";
     private static final String TABLE_BLOOD_MEASUREMENTS = "blood";
 
+    private static final String TABLE_WEHIGHT_MEASUREMENTS = "weight";
+
     // Drugs Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_TIME = "time";
     private static final String KEY_STATE = "state";
-    private static final String KEY_VALUE = "value";
+    private static final String KEY_VALUE_HIGH = "high";
+    private static final String KEY_VALUE_LOW = "low";
+    private static final String KEY_VALUE= "value";
+    private static final String KEY_NOTES = "notes";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,9 +53,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"+ KEY_TIME +" TEXT, "
                 + KEY_STATE + " TEXT" + ")";
         db.execSQL(CREATE_DrugS_TABLE);
-        String CREATE_Measurements_TABLE = "CREATE TABLE " + TABLE_BLOOD_MEASUREMENTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TIME +" TEXT, " + KEY_VALUE + " TEXT " +")";
-        db.execSQL(CREATE_Measurements_TABLE);
+        String CREATE_Blood_Measurements_TABLE = "CREATE TABLE " + TABLE_BLOOD_MEASUREMENTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TIME +" TEXT, " + KEY_VALUE_HIGH + " TEXT ,"+ KEY_VALUE_LOW + " TEXT, "
+                + KEY_NOTES +" TEXT" +")";
+        db.execSQL(CREATE_Blood_Measurements_TABLE);
+
+        String CREATE_Weight_Measurements_TABLE = "CREATE TABLE " + TABLE_WEHIGHT_MEASUREMENTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TIME +" TEXT, " + KEY_VALUE + " TEXT ,"+ KEY_NOTES +" TEXT" +")";
+        db.execSQL(CREATE_Weight_Measurements_TABLE);
     }
 
     // Upgrading database
@@ -59,6 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DrugS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BLOOD_MEASUREMENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WEHIGHT_MEASUREMENTS);
         // Create tables again
         onCreate(db);
     }
@@ -81,16 +92,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // Adding new Drug
-    public void addBloodMeasure(Measurement measurement) {
+    public void addBloodMeasure(BloodMeasurement bloodMeasurement) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, measurement.getName()); // Drug Name
-        values.put(KEY_TIME, measurement.getTime()); // Drug Phone
-        values.put(KEY_VALUE,measurement.getValue());
-
+         // Drug Name
+        values.put(KEY_TIME, bloodMeasurement.getTime()); // Drug Phone
+        values.put(KEY_VALUE_HIGH, bloodMeasurement.getValue_HIGH());
+        values.put(KEY_VALUE_LOW, bloodMeasurement.getValue_LOW());
+        values.put(KEY_NOTES, bloodMeasurement.getNotes());
         // Inserting Row
         db.insert(TABLE_BLOOD_MEASUREMENTS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    public void addWeightMeasure(WeightMeasurement weightMeasurement) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        // Drug Name
+        values.put(KEY_TIME, weightMeasurement.getTime()); // Drug Phone
+        values.put(KEY_VALUE, weightMeasurement.getValue());
+        values.put(KEY_NOTES, weightMeasurement.getNotes());
+        // Inserting Row
+        db.insert(TABLE_WEHIGHT_MEASUREMENTS, null, values);
         db.close(); // Closing database connection
     }
     // Getting single Drug
@@ -134,8 +159,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return Drug list
         return DrugList;
     }
-    public List<Measurement> getAllBloodMeasurements() {
-        List<Measurement> DrugList = new ArrayList<Measurement>();
+    public List<BloodMeasurement> getAllBloodMeasurements() {
+        List<BloodMeasurement> DrugList = new ArrayList<BloodMeasurement>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_BLOOD_MEASUREMENTS ;
 
@@ -145,12 +170,39 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Measurement measurement = new Measurement();
-                measurement.setID(Integer.parseInt(cursor.getString(0)));
-                measurement.setTime(cursor.getString(1));
-                measurement.setValue(cursor.getString(2));
+                BloodMeasurement bloodMeasurement = new BloodMeasurement();
+                bloodMeasurement.setID(Integer.parseInt(cursor.getString(0)));
+                bloodMeasurement.setTime(cursor.getString(1));
+                bloodMeasurement.setValue_HIGH(cursor.getString(2));
+                bloodMeasurement.setValue_LOW(cursor.getString(3));
+                bloodMeasurement.setNotes(cursor.getString(4));
                 // Adding Drug to list
-                DrugList.add(measurement);
+                DrugList.add(bloodMeasurement);
+            } while (cursor.moveToNext());
+        }
+
+        // return Drug list
+        return DrugList;
+    }
+
+    public List<WeightMeasurement> getAllWeightMeasurements() {
+        List<WeightMeasurement> DrugList = new ArrayList<WeightMeasurement>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_WEHIGHT_MEASUREMENTS ;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                WeightMeasurement weightMeasurement = new WeightMeasurement();
+                weightMeasurement.setID(Integer.parseInt(cursor.getString(0)));
+                weightMeasurement.setTime(cursor.getString(1));
+                weightMeasurement.setValue(cursor.getString(2));
+                weightMeasurement.setNotes(cursor.getString(3));
+                // Adding Drug to list
+                DrugList.add(weightMeasurement);
             } while (cursor.moveToNext());
         }
 

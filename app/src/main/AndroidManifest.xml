@@ -29,7 +29,51 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.eh.medipha.HomeActivity" />
         </activity>
-
+        <activity
+            android:name=".MeasurementsActivity"
+            android:label="@string/title_activity_measurements"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.eh.medipha.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".BloodMeasureActivity"
+            android:label="@string/title_activity_blood_measure"
+            android:parentActivityName=".MeasurementsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.eh.medipha.MeasurementsActivity" />
+        </activity>
+        <activity
+            android:name=".AddBlood"
+            android:label="@string/title_activity_add_blood"
+            android:parentActivityName=".BloodMeasureActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.eh.medipha.BloodMeasureActivity" />
+        </activity>
+        <activity
+            android:name=".WeightMeasureActivity"
+            android:label="@string/title_activity_weight_measure"
+            android:parentActivityName=".MeasurementsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.eh.medipha.MeasurementsActivity" />
+        </activity>
+        <activity
+            android:name=".AddWeight"
+            android:label="@string/title_activity_add_weight"
+            android:parentActivityName=".MeasurementsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.eh.medipha.MeasurementsActivity" />
+        </activity>
     </application>
 
 </manifest>

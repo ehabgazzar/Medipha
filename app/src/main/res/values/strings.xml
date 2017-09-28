@@ -12,4 +12,7 @@
     <string name="title_activity_medications">MedicationsActivity</string>
     <string name="title_activity_measurements">MeasurementsActivity</string>
     <string name="title_activity_blood_measure">BloodMeasureActivity</string>
+    <string name="title_activity_add_blood">Add Blood Measurement</string>
+    <string name="title_activity_weight_measure">Weight Measure</string>
+    <string name="title_activity_add_weight">Add Weight</string>
 </resources>
